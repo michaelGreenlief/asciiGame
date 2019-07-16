@@ -1,6 +1,7 @@
 package gameTest;
 
 import asciiPanel.AsciiPanel;
+import java.util.List;
 
 public class CreatureFactory {
     private World world;
@@ -10,15 +11,15 @@ public class CreatureFactory {
         this.world = world;
     }
 
-    public Creature newPlayer() {
-        Creature player = new Creature(world, '@', AsciiPanel.brightWhite);
+    public Creature newPlayer(List<String> messages) {
+        Creature player = new Creature(world, '@', AsciiPanel.brightWhite, 100,20, 0);
         world.addAtEmptyLocation(player);
-        new PlayerAi(player);
+        new PlayerAi(player, messages);
         return player;
     }
 
     public Creature newFungus() {
-        Creature fungus = new Creature(world, 'f', AsciiPanel.green);
+        Creature fungus = new Creature(world, 'f', AsciiPanel.green, 10, 0, 0);
         world.addAtEmptyLocation(fungus);
         new FungusAi(fungus, this);
         return fungus;
