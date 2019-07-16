@@ -4,11 +4,10 @@ import javax.swing.JFrame;
 import asciiPanel.AsciiPanel;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-//import gameTest.screens.Screen;
-//import gameTest.screens.StartScreen;
+import gameTest.screens.Screen;
+import gameTest.screens.StartScreen;
 
-public class ApplicationMain extends JFrame implements KeyListener
-{
+public class ApplicationMain extends JFrame implements KeyListener {
     private static final long serialVersionUID = 1060623638149583738L;
 
     private AsciiPanel terminal;
@@ -24,8 +23,7 @@ public class ApplicationMain extends JFrame implements KeyListener
         repaint();
     }
 
-    public void repaint()
-    {
+    public void repaint(){
         terminal.clear();
         screen.displayOutput(terminal);
         super.repaint();
