@@ -1,10 +1,13 @@
-package gameTest;
+package gameTest.screens;
 
 import java.awt.event.KeyEvent;
 import asciiPanel.AsciiPanel;
+import gameTest.Creature;
+import gameTest.CreatureFactory;
+import gameTest.World;
+import gameTest.WorldBuilder;
 
 public class PlayScreen implements Screen {
-
     private World world;
     private Creature player;
     private int screenWidth;
@@ -16,7 +19,16 @@ public class PlayScreen implements Screen {
         createWorld();
 
         CreatureFactory creatureFactory = new CreatureFactory(world);
+        createCreatures(creatureFactory);
+    }
+
+    private void createCreatures(CreatureFactory creatureFactory) {
         player = creatureFactory.newPlayer();
+
+        for(int i = 0; i < 8; i++)
+        {
+            creatureFactory.newFungus();
+        }
     }
 
     private void createWorld() {
@@ -25,18 +37,16 @@ public class PlayScreen implements Screen {
                 .build();
     }
 
+
     public int getScrollX() { return Math.max(0, Math.min(player.x - screenWidth / 2, world.width() - screenWidth)); }
 
     public int getScrollY() { return Math.max(0, Math.min(player.y - screenHeight / 2, world.height() - screenHeight)); }
 
-    public void displayOutput(AsciiPanel terminal)
-    {
+    public void displayOutput(AsciiPanel terminal){
         int left = getScrollX();
         int top = getScrollY();
 
         displayTiles(terminal, left, top);
-
-        terminal.write(player.glyph(), player.x - left, player.y - top, player.color());
 
         terminal.writeCenter("- - Press [escape] to lose or [enter] to win - -", 22);
     }
@@ -47,7 +57,11 @@ public class PlayScreen implements Screen {
                 int wx = x + left;
                 int wy = y + top;
 
-                terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
+                Creature creature = world.creature(wx, wy);
+                if(creature != null)
+                    terminal.write(creature.glyph(), creature.x - left, creature.y - top, creature.color());
+                else
+                    terminal.write(world.glyph(wx, wy), x, y, world.color(wx, wy));
             }
         }
     }
@@ -96,6 +110,8 @@ public class PlayScreen implements Screen {
                 player.moveBy(1,1);
                 break;
         }
+
+        world.update();
 
         return this;
     }

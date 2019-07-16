@@ -1,4 +1,4 @@
-package gameTest;
+package gameTest.screens;
 
 import java.awt.event.KeyEvent;
 import asciiPanel.AsciiPanel;
@@ -6,7 +6,6 @@ import asciiPanel.AsciiPanel;
 public interface Screen
 {
     public void displayOutput(AsciiPanel terminal);
-
 
     public Screen respondToUserInput(KeyEvent key);
 }
