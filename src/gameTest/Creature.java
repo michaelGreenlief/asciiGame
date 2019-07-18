@@ -140,4 +140,20 @@ public class Creature {
 
         return builder.toString().trim();
     }
+
+    private int visionRadius;
+    public int visionRadius(){
+
+        return visionRadius;
+    }
+
+    public boolean canSee(int wx ,int wy , int wz){
+
+        return ai.canSee(wx, wy, wz);
+    }
+
+    public Tile tile(int wx, int wy, int wz){
+
+        return world.tile(wx, wy, wz);
+    }
 }
