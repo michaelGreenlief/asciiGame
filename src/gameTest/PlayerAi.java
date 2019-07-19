@@ -24,4 +24,8 @@ public class PlayerAi extends CreatureAi {
     public void onNotify(String message){
         messages.add(message);
     }
+
+    public boolean canSee(int wx, int wy, int wz){
+        return FieldOfView.isVisible(wx, wy, wz);
+    }
 }

@@ -3,10 +3,8 @@ package gameTest.screens;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import asciiPanel.AsciiPanel;
-import gameTest.Creature;
-import gameTest.CreatureFactory;
-import gameTest.World;
-import gameTest.WorldBuilder;
+import gameTest.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +83,7 @@ public class PlayScreen implements Screen {
                         terminal.write(world.glyph(wx, wy, player.z), x, y, world.color(wx, wy, player.z));
                 }
                 else {
-                    terminal.write(world.glyph(wx, wy, player.z), x, y, Color.darkGray);
+                    terminal.write(FieldOfView.tile(wx, wy, player.z).glyph(), x, y, Color.darkGray);
                 }
             }
         }

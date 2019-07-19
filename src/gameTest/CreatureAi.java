@@ -14,6 +14,7 @@ public class CreatureAi {
 
     public void onNotify(String message) {}
 
+    //I'm not sure if I put this in the right class
     public boolean canSee(int wx, int wy, int wz){
 
         if(creature.z != wz){
