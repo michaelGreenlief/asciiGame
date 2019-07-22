@@ -22,7 +22,15 @@ public class CreatureAi {
     public void wander(){
         int mx = (int)(Math.random()*3) - 1;
         int my = (int)(Math.random()*3) - 1;
-        creature.moveBy(mx, my, 0);
+
+        Creature other = creature.creature(creature.x + mx, creature.y + my, creature.z);
+
+        if(other != null && other.glyph() == creature.glyph()){
+            return;
+        }
+        else{
+            creature.moveBy(mx, my, 0);
+        }
     }
 
     public void onUpdate() {}

@@ -30,6 +30,11 @@ public class Creature {
     private int defenseValue;
     public int defenseValue() { return defenseValue; }
 
+    private String name;
+    public String name(){
+        return name;
+    }
+
     public Creature(World world, char glyph, Color color, int maxHp, int attack, int defense) {
         this.world = world;
         this.glyph = glyph;
@@ -41,6 +46,9 @@ public class Creature {
     }
 
     public void moveBy(int mx, int my, int mz) {
+        if(mx==0 && my==0 && mz ==0){
+            return;
+        }
         Tile tile = world.tile(x + mx, y + my, z + mz);
         Creature other = world.creature(x + mx, y + my, z + mz);
 
@@ -156,5 +164,10 @@ public class Creature {
     public Tile tile(int wx, int wy, int wz){
 
         return world.tile(wx, wy, wz);
+    }
+
+    public Creature creature(int wx, int wy, int wz){
+
+        return world.creature(wx, wy, wz);
     }
 }
