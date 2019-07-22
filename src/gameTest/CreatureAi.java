@@ -8,7 +8,22 @@ public class CreatureAi {
         this.creature.setCreatureAi(this);
     }
 
-    public void onEnter(int x, int y, int z, Tile tile){}
+    public void onEnter(int x, int y, int z, Tile tile){
+        if(tile.isGround()){
+            creature.x = x;
+            creature.y = y;
+            creature.z = z;
+        }
+        else {
+            creature.doAction("bump into a wall");
+        }
+    }
+
+    public void wander(){
+        int mx = (int)(Math.random()*3) - 1;
+        int my = (int)(Math.random()*3) - 1;
+        creature.moveBy(mx, my, 0);
+    }
 
     public void onUpdate() {}
 
