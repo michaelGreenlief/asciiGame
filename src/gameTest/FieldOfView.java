@@ -48,7 +48,7 @@ public class FieldOfView {
                     continue;
                 }
 
-                for(Point p : new Line(wx, wy, wx + x, wy + y)){
+                for (Point p : new Line(wx, wy, wx + x, wy + y)){
                     Tile tile = world.tile(p.x, p.y, wz);
                     visible[p.x][p.y] = true;
                     tiles[p.x][p.y][wz] = tile;

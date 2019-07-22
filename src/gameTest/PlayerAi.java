@@ -4,10 +4,12 @@ import java.util.List;
 
 public class PlayerAi extends CreatureAi {
     private List<String> messages;
+    private FieldOfView fov;
 
     public PlayerAi(Creature creature, List<String> messages) {
         super(creature);
         this.messages = messages;
+        this.fov = fov;
     }
 
     public void onEnter(int x, int y, int z, Tile tile){
@@ -26,6 +28,6 @@ public class PlayerAi extends CreatureAi {
     }
 
     public boolean canSee(int wx, int wy, int wz){
-        return FieldOfView.isVisible(wx, wy, wz);
+        return fov.isVisible(wx, wy, wz);
     }
 }

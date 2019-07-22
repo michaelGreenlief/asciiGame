@@ -4,11 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class Line {
+public class Line implements Iterable<Point>{
 
     private List<Point> points;
-
-
     public List<Point> getPoints(){
 
         return points;
@@ -18,12 +16,12 @@ public class Line {
 
         points = new ArrayList<Point>();
 
-        int deltax = (x1 - x0);
-        int deltay = (y1 - y0);
+        int dx = (x1 - x0);
+        int dy = (y1 - y0);
 
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;
-        int error = Math.abs(deltax - deltay);
+        int error = dx - dy;
 
 
         while (true){
@@ -35,18 +33,19 @@ public class Line {
             }
 
             int e2 = error * 2;
-            if(e2 > -deltax){
-                error -= deltay;
+            if(e2 > -dx){
+                error -= dy;
                 x0 += sx;
             }
 
-            if(e2 < deltax){
-                error += deltax;
+            if(e2 < dx){
+                error += dx;
                 y0 += sy;
             }
         }
     }
 
+    @Override
     public Iterator<Point> iterator(){
 
         return points.iterator();
