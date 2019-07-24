@@ -15,6 +15,7 @@ public class PlayScreen implements Screen {
     private int screenHeight;
     private List<String> messages;
     private FieldOfView fov;
+    private Screen subscreen;
 
     public PlayScreen() {
         screenWidth = 80;
@@ -40,6 +41,15 @@ public class PlayScreen implements Screen {
 
     }
 
+    private void createItems(CreatureFactory factory){
+        for(int z = 0; z < world.depth(); z++){
+            for(int i = 0; i < world.width() * world.height() / 20; i++){
+                factory.newRock(z);
+            }
+        }
+        factory.newVictoryItem(world.depth() -1);
+    }
+
     private void createWorld() {
         world = new WorldBuilder(90, 31, 5)
                 .makeCaves()
@@ -51,19 +61,20 @@ public class PlayScreen implements Screen {
 
     public int getScrollY() { return Math.max(0, Math.min(player.y - screenHeight / 2, world.height() - screenHeight)); }
 
+    @Override
     public void displayOutput(AsciiPanel terminal){
         int left = getScrollX();
         int top = getScrollY();
 
         displayTiles(terminal, left, top);
-
         String stats = String.format("%3d/%3d hp", player.hp(), player.maxHp());
-
         displayMessages(terminal, messages);
-
         terminal.write(stats,1,23);
 
-        terminal.writeCenter("- - Press [escape] to lose or [enter] to win - -", 22);
+
+        if(subscreen != null){
+            subscreen.displayOutput(terminal);
+        }
     }
 
     private void displayMessages(AsciiPanel terminal, List<String> messages) {
@@ -92,61 +103,85 @@ public class PlayScreen implements Screen {
         }
     }
 
-    public Screen respondToUserInput(KeyEvent key) {
-        switch (key.getKeyCode()) {
-            case KeyEvent.VK_ESCAPE:
-                return new LoseScreen();
+    private boolean userIsTryingToExit(){
+        return player.z == 0 && world.tile(player.x, player.y, player.z) == Tile.STAIRS_UP;
+    }
 
-            case KeyEvent.VK_ENTER:
+    private Screen userExits(){
+        for(Item item : player.inventory().getItems()){
+            if(item != null && item.name().equals("teddy bear")){
                 return new WinScreen();
+            }
+        }
+        return new LoseScreen();
+    }
 
-            case KeyEvent.VK_LEFT:
-            case KeyEvent.VK_H:
-                player.moveBy(-1,0, 0);
-                break;
 
-            case KeyEvent.VK_RIGHT:
-            case KeyEvent.VK_L:
-                player.moveBy(1,0, 0);
-                break;
+    public Screen respondToUserInput(KeyEvent key) {
+        if(subscreen != null){
+            subscreen = subscreen.respondToUserInput(key);
+        }
+        else {
+            switch (key.getKeyCode()) {
+                case KeyEvent.VK_LEFT:
+                case KeyEvent.VK_H:
+                    player.moveBy(-1, 0, 0);
+                    break;
 
-            case KeyEvent.VK_UP:
-            case KeyEvent.VK_K:
-                player.moveBy(0, -1, 0);
-                break;
+                case KeyEvent.VK_RIGHT:
+                case KeyEvent.VK_L:
+                    player.moveBy(1, 0, 0);
+                    break;
 
-            case KeyEvent.VK_DOWN:
-            case KeyEvent.VK_J:
-                player.moveBy(0,1, 0);
-                break;
+                case KeyEvent.VK_UP:
+                case KeyEvent.VK_K:
+                    player.moveBy(0, -1, 0);
+                    break;
 
-            case KeyEvent.VK_Y:
-                player.moveBy(-1, -1, 0);
-                break;
+                case KeyEvent.VK_DOWN:
+                case KeyEvent.VK_J:
+                    player.moveBy(0, 1, 0);
+                    break;
 
-            case KeyEvent.VK_U:
-                player.moveBy(1, -1, 0);
-                break;
+                case KeyEvent.VK_Y:
+                    player.moveBy(-1, -1, 0);
+                    break;
 
-            case KeyEvent.VK_B:
-                player.moveBy(-1, 1, 0);
-                break;
+                case KeyEvent.VK_U:
+                    player.moveBy(1, -1, 0);
+                    break;
 
-            case KeyEvent.VK_N:
-                player.moveBy(1,1, 0);
-                break;
+                case KeyEvent.VK_B:
+                    player.moveBy(-1, 1, 0);
+                    break;
+
+                case KeyEvent.VK_N:
+                    player.moveBy(1, 1, 0);
+                    break;
+            }
         }
 
         switch(key.getKeyChar()) {
-            case '<':
-                player.moveBy( 0, 0, -1);
+            case 'g':
+            case ',':
+                player.pickup();
                 break;
+            case '<':
+                if(userIsTryingToExit()){
+                    return userExits();
+                }
+                else {
+                    player.moveBy(0, 0, -1);
+                    break;
+                }
             case '>':
                 player.moveBy(0, 0, 1);
                 break;
         }
 
-        world.update();
+        if(subscreen == null) {
+            world.update();
+        }
 
         if(player.hp() < 1){
             return new LoseScreen();

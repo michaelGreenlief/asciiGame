@@ -31,4 +31,16 @@ public class CreatureFactory {
         new BatAi(bat);
         return bat;
     }
+
+    public Item newRock(int depth){
+        Item rock = new Item(',', AsciiPanel.yellow, "rock");
+        world.addAtEmptyLocation(rock, depth);
+        return rock;
+    }
+
+    public Item newVictoryItem(int depth){
+        Item item = new Item('*', AsciiPanel.brightYellow, "teddy bear");
+        world.addAtEmptyLocation(item, depth);
+        return item;
+    }
 }

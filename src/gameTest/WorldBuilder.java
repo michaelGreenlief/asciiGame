@@ -1,5 +1,6 @@
 package gameTest;
 
+import javax.rmi.CORBA.Tie;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Collections;
@@ -180,4 +181,18 @@ public class WorldBuilder{
                 .connectRegions();
 
     }
+
+    private WorldBuilder addExitStairs(){
+        int x = -1;
+        int y = -1;
+
+        do{
+            x = (int)(Math.random() * width);
+            y = (int)(Math.random() * height);
+        }
+        while(tiles[x][y][0] != Tile.FLOOR);
+        tiles[x][y][0] = Tile.STAIRS_UP;
+        return  this;
+    }
+
 }
