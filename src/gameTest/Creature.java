@@ -30,6 +30,12 @@ public class Creature {
     private int defenseValue;
     public int defenseValue() { return defenseValue; }
 
+    private int visionRadius;
+    public int visionRadius(){
+
+        return visionRadius;
+    }
+
     private String name;
     public String name(){
         return name;
@@ -40,7 +46,7 @@ public class Creature {
         return inventory;
     }
 
-    public Creature(World world, char glyph, Color color, int maxHp, int attack, int defense) {
+    public Creature(World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
         this.world = world;
         this.glyph = glyph;
         this.color = color;
@@ -48,6 +54,8 @@ public class Creature {
         this.hp = maxHp;
         this.attackValue = attack;
         this.defenseValue = defense;
+        this.visionRadius = 9;
+        this.name = name;
         this.inventory = new Inventory(20);
     }
 
@@ -56,7 +64,6 @@ public class Creature {
             return;
         }
         Tile tile = world.tile(x + mx, y + my, z + mz);
-        Creature other = world.creature(x + mx, y + my, z + mz);
 
         if(mz == -1) {
             if(tile == Tile.STAIRS_DOWN) {
@@ -77,6 +84,8 @@ public class Creature {
             }
         }
 
+        Creature other = world.creature(x + mx, y + my, z + mz);
+
         if(other == null)
         {
             ai.onEnter(x + mx, y + my, z + mz, tile);
@@ -90,8 +99,7 @@ public class Creature {
 
         amount = (int)(Math.random() * amount) + 1;
 
-        notify("You attack the '%s' for %d damage.", other.glyph, amount);
-        other.notify("The '%s' attacks you for %d damage.", glyph, amount);
+        doAction("attack the %s for %d damage", other.name, amount);
 
         other.modifyHp(-amount);
     }
@@ -125,7 +133,7 @@ public class Creature {
     public void doAction(String message, Object ... params){
         int r = 9;
         for(int ox = -r; ox < r + 1; ox++) {
-            for(int oy = -4; oy < r + 1; oy++) {
+            for(int oy = -r; oy < r + 1; oy++) {
                 if(ox*ox + oy*oy > r*r)
                     continue;
 
@@ -137,7 +145,7 @@ public class Creature {
                 if(other == this)
                     other.notify("You " + message + ".", params);
                 else if(other.canSee(x, y, z)) {
-                    other.notify(String.format("The '%s' %s.", glyph, makeSecondPerson(message)), params);
+                    other.notify(String.format("The '%s' %s.", name, makeSecondPerson(message)), params);
                 }
             }
         }
@@ -154,12 +162,6 @@ public class Creature {
         }
 
         return builder.toString().trim();
-    }
-
-    private int visionRadius;
-    public int visionRadius(){
-
-        return visionRadius;
     }
 
     public boolean canSee(int wx ,int wy , int wz){

@@ -1,7 +1,5 @@
 package gameTest;
 
-import asciiPanel.AsciiPanel;
-
 import java.awt.Color;
 
 public class Item {

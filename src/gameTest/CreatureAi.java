@@ -19,25 +19,10 @@ public class CreatureAi {
         }
     }
 
-    public void wander(){
-        int mx = (int)(Math.random()*3) - 1;
-        int my = (int)(Math.random()*3) - 1;
-
-        Creature other = creature.creature(creature.x + mx, creature.y + my, creature.z);
-
-        if(other != null && other.glyph() == creature.glyph()){
-            return;
-        }
-        else{
-            creature.moveBy(mx, my, 0);
-        }
-    }
-
     public void onUpdate() {}
 
     public void onNotify(String message) {}
 
-    //I'm not sure if I put this in the right class
     public boolean canSee(int wx, int wy, int wz){
 
         if(creature.z != wz){
@@ -53,5 +38,19 @@ public class CreatureAi {
             return false;
         }
         return true;
+    }
+
+    public void wander(){
+        int mx = (int)(Math.random()*3) - 1;
+        int my = (int)(Math.random()*3) - 1;
+
+        Creature other = creature.creature(creature.x + mx, creature.y + my, creature.z);
+
+        if(other != null && other.name().equals(creature.name()) || !creature.tile(creature.x + mx, creature.y + my, creature.z).isGround()){
+            return;
+        }
+        else{
+            creature.moveBy(mx, my, 0);
+        }
     }
 }

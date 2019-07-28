@@ -16,8 +16,8 @@ public class Line implements Iterable<Point>{
 
         points = new ArrayList<Point>();
 
-        int dx = (x1 - x0);
-        int dy = (y1 - y0);
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
 
         int sx = x0 < x1 ? 1 : -1;
         int sy = y0 < y1 ? 1 : -1;

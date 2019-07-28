@@ -1,26 +1,31 @@
 package gameTest;
 
-import javax.swing.JFrame;
-import asciiPanel.AsciiPanel;
+import java.applet.Applet;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import gameTest.screens.Screen;
 import gameTest.screens.StartScreen;
+import asciiPanel.AsciiPanel;
 
-public class ApplicationMain extends JFrame implements KeyListener {
-    private static final long serialVersionUID = 1060623638149583738L;
+public class AppletMain extends Applet implements KeyListener {
+    private static final long serialVersionUID = 2560255315130084198L;
 
     private AsciiPanel terminal;
     private Screen screen;
 
-    public ApplicationMain(){
+    public AppletMain(){
         super();
         terminal = new AsciiPanel();
         add(terminal);
-        pack();
         screen = new StartScreen();
         addKeyListener(this);
         repaint();
+    }
+
+    @Override
+    public void init(){
+        super.init();
+        this.setSize(terminal.getWidth() + 20, terminal.getHeight() + 20);
     }
 
     @Override
@@ -31,21 +36,14 @@ public class ApplicationMain extends JFrame implements KeyListener {
     }
 
     @Override
-    public void keyPressed(KeyEvent e)
-    {
+    public void keyPressed(KeyEvent e){
         screen = screen.respondToUserInput(e);
         repaint();
     }
 
     @Override
-    public void keyReleased(KeyEvent e) {}
+    public void keyReleased(KeyEvent e){}
 
     @Override
-    public void keyTyped(KeyEvent e) {}
-
-    public static void main(String[] args) {
-        ApplicationMain app = new ApplicationMain();
-        app.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        app.setVisible(true);
-    }
+    public void keyTyped(KeyEvent e){}
 }

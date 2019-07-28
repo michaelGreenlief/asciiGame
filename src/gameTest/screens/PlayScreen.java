@@ -1,12 +1,12 @@
 package gameTest.screens;
 
-import java.awt.*;
+import java.awt.Color;
 import java.awt.event.KeyEvent;
-import asciiPanel.AsciiPanel;
-import gameTest.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import asciiPanel.AsciiPanel;
+import gameTest.*;
 
 public class PlayScreen implements Screen {
     private World world;
@@ -19,29 +19,32 @@ public class PlayScreen implements Screen {
 
     public PlayScreen() {
         screenWidth = 80;
-        screenHeight = 21;
+        screenHeight = 23;
         messages = new ArrayList<String>();
         createWorld();
+        fov = new FieldOfView(world);
 
-        CreatureFactory creatureFactory = new CreatureFactory(world);
-        createCreatures(creatureFactory);
+        StuffFactory factory = new StuffFactory(world);
+        createCreatures(factory);
+        createItems(factory);
+
     }
 
-    private void createCreatures(CreatureFactory creatureFactory) {
-        player = creatureFactory.newPlayer(messages);
+    private void createCreatures(StuffFactory factory) {
+        player = factory.newPlayer(messages, fov);
 
         for(int z = 0; z < world.depth(); z++) {
             for(int i = 0; i < 8; i++) {
-                creatureFactory.newFungus(z);
+                factory.newFungus(z);
             }
             for(int i = 0; i < 20; i++){
-                creatureFactory.newBat(z);
+                factory.newBat(z);
             }
         }
 
     }
 
-    private void createItems(CreatureFactory factory){
+    private void createItems(StuffFactory factory){
         for(int z = 0; z < world.depth(); z++){
             for(int i = 0; i < world.width() * world.height() / 20; i++){
                 factory.newRock(z);
@@ -67,8 +70,8 @@ public class PlayScreen implements Screen {
         int top = getScrollY();
 
         displayTiles(terminal, left, top);
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHp());
         displayMessages(terminal, messages);
+        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHp());
         terminal.write(stats,1,23);
 
 
@@ -94,7 +97,7 @@ public class PlayScreen implements Screen {
                 int wy = y + top;
 
                 if(player.canSee(wx, wy, player.z)){
-                    terminal.write(world.glyph(wx, wy, player.y), x, y, world.color(wx, wy, player.z));
+                    terminal.write(world.glyph(wx, wy, player.z), x, y, world.color(wx, wy, player.z));
                 }
                 else{
                     terminal.write(fov.tile(wx, wy, player.z).glyph(), x, y, Color.darkGray);
@@ -103,20 +106,9 @@ public class PlayScreen implements Screen {
         }
     }
 
-    private boolean userIsTryingToExit(){
-        return player.z == 0 && world.tile(player.x, player.y, player.z) == Tile.STAIRS_UP;
-    }
-
-    private Screen userExits(){
-        for(Item item : player.inventory().getItems()){
-            if(item != null && item.name().equals("teddy bear")){
-                return new WinScreen();
-            }
-        }
-        return new LoseScreen();
-    }
 
 
+    @Override
     public Screen respondToUserInput(KeyEvent key) {
         if(subscreen != null){
             subscreen = subscreen.respondToUserInput(key);
@@ -192,6 +184,19 @@ public class PlayScreen implements Screen {
         }
 
         return this;
+    }
+
+    private boolean userIsTryingToExit(){
+        return player.z == 0 && world.tile(player.x, player.y, player.z) == Tile.STAIRS_UP;
+    }
+
+    private Screen userExits(){
+        for(Item item : player.inventory().getItems()){
+            if(item != null && item.name().equals("teddy bear")){
+                return new WinScreen();
+            }
+        }
+        return new LoseScreen();
     }
 
 }

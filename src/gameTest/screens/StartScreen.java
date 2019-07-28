@@ -5,8 +5,9 @@ import asciiPanel.AsciiPanel;
 
 public class StartScreen implements Screen
 {
+    @Override
     public void displayOutput(AsciiPanel terminal){
-        terminal.writeCenter("PROJECT T.A.D.", 11);
+        terminal.write("PROJECT T.A.D.", 1, 1);
         terminal.writeCenter("- - Press [enter] to Start - -", 22);
     }
 
