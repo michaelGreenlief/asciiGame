@@ -25,10 +25,16 @@ public class Creature {
     public int hp() { return hp; }
 
     private int attackValue;
-    public int attackValue() { return attackValue; }
+    public int attackValue() {
+        return attackValue
+        + (weapon == null ? 0 : weapon.attackValue()) + (armor == null ? 0 : armor.attackValue());
+    }
 
     private int defenseValue;
-    public int defenseValue() { return defenseValue; }
+    public int defenseValue() {
+        return defenseValue
+        + (weapon == null ? 0 : weapon.defenseValue()) + (armor == null ? 0: armor.defenseValue());
+    }
 
     private int visionRadius;
     public int visionRadius(){
@@ -46,6 +52,16 @@ public class Creature {
         return inventory;
     }
 
+    private Item weapon;
+    public Item weapon(){
+        return weapon;
+    }
+
+    private Item armor;
+    public Item armor(){
+        return armor;
+    }
+
     public Creature(World world, char glyph, Color color, String name, int maxHp, int attack, int defense) {
         this.world = world;
         this.glyph = glyph;
@@ -57,6 +73,8 @@ public class Creature {
         this.visionRadius = 9;
         this.name = name;
         this.inventory = new Inventory(20);
+        this.maxFood = 1000;
+        this.food = maxFood / 3 * 2;
     }
 
     public void moveBy(int mx, int my, int mz) {
@@ -114,12 +132,14 @@ public class Creature {
     }
 
     public void dig(int wx, int wy, int wz) {
+        modifyFood(-1);
         world.dig(wx,wy, wz);
         doAction("dig");
     }
 
     public void update()
     {
+        modifyFood(-1);
         ai.onUpdate();
     }
 
@@ -195,9 +215,92 @@ public class Creature {
         if(world.addAtEmptySpace(item, x, y, z)){
             doAction("drop a " + item.name());
             inventory.remove(item);
+            unequip(item);
         }
         else{
             notify("There's nowhere to drop the %s.", item.name());
+        }
+    }
+
+    public void modifyHP(int amount){
+        hp += amount;
+        if(hp < 1){
+            doAction("die");
+            leaveCorpse();
+            world.remove(this);
+        }
+    }
+
+    private void leaveCorpse(){
+        Item corpse = new Item('%', color, name + "corpse");
+        corpse.modifyFoodValue(maxHp * 3);
+        world.addAtEmptySpace(corpse, x, y, z);
+    }
+
+    private int maxFood;
+    public int maxFood(){
+        return maxFood;
+    }
+
+    private int food;
+    public int food(){
+        return food;
+    }
+
+    public void modifyFood(int amount){
+        food += amount;
+        if(food > maxFood){
+            maxFood = maxFood + food / 2;
+            food = maxFood;
+            notify("You can't believe your stomach can hold that much!");
+            modifyHp(-1);
+        }
+        else if(food < 1 && isPlayer()){
+            modifyHp(-1000);
+        }
+    }
+
+    public boolean isPlayer(){
+        return glyph == '@';
+    }
+
+    public void eat(Item item){
+        if(item.foodValue() < 0){
+            notify("Gross!");
+        }
+
+        modifyFood(item.foodValue());
+        inventory.remove(item);
+        unequip(item);
+    }
+
+    public void unequip(Item item){
+        if(item == null){
+            return;
+        }
+        if(item == armor){
+            doAction("remove a " + item.name());
+            armor = null;
+        }
+        else if(item == weapon){
+            doAction("put away a " + item.name());
+            weapon = null;
+        }
+    }
+
+    public void equip(Item item){
+        if(item.attackValue() == 0 && item.defenseValue() == 0){
+            return;
+        }
+        if(item.attackValue() >= item.defenseValue()){
+            unequip(weapon);
+            doAction("wield a " + item.name());
+            weapon = item;
+        }
+        else{
+            unequip(armor);
+            doAction("put on a " + item.name());
+            armor = item;
         }
     }
 

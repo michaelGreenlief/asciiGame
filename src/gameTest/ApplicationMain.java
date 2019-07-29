@@ -1,3 +1,10 @@
+/*
+CSIS 1400 Project
+Zachary Plummer
+Jessemy Lake
+Michael Greenlief
+ */
+
 package gameTest;
 
 import javax.swing.JFrame;

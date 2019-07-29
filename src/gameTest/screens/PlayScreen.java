@@ -40,6 +40,9 @@ public class PlayScreen implements Screen {
             for(int i = 0; i < 20; i++){
                 factory.newBat(z);
             }
+            for(int i = 0; i < z + 3; i++){
+                factory.newZombie(z, player);
+            }
         }
 
     }
@@ -49,6 +52,12 @@ public class PlayScreen implements Screen {
             for(int i = 0; i < world.width() * world.height() / 20; i++){
                 factory.newRock(z);
             }
+            factory.newBanana(z);
+            factory.newBread(z);
+            factory.newMeat(z);
+            factory.randomArmor(z);
+            factory.randomWeapon(z);
+            factory.randomWeapon(z);
         }
         factory.newVictoryItem(world.depth() -1);
     }
@@ -71,7 +80,7 @@ public class PlayScreen implements Screen {
 
         displayTiles(terminal, left, top);
         displayMessages(terminal, messages);
-        String stats = String.format("%3d/%3d hp", player.hp(), player.maxHp());
+        String stats = String.format(" %3d/%3d hp %8s", player.hp(), player.maxHp(), hunger());
         terminal.write(stats,1,23);
 
 
@@ -154,6 +163,18 @@ public class PlayScreen implements Screen {
                 case KeyEvent.VK_D:
                     subscreen = new DropScreen(player);
                     break;
+
+                case KeyEvent.VK_E:
+                    subscreen = new EatScreen(player);
+                    break;
+
+                case KeyEvent.VK_W:
+                    subscreen = new EquipScreen(player);
+                    break;
+
+                case KeyEvent.VK_X:
+                    subscreen = new ExamineClass(player);
+                    break;
             }
         }
 
@@ -172,6 +193,10 @@ public class PlayScreen implements Screen {
                 }
             case '>':
                 player.moveBy(0, 0, 1);
+                break;
+
+            case '?':
+                subscreen = new HelpScreen();
                 break;
         }
 
@@ -197,6 +222,24 @@ public class PlayScreen implements Screen {
             }
         }
         return new LoseScreen();
+    }
+
+    private String hunger(){
+        if(player.food() < player.maxFood() * 0.1){
+            return "Starving";
+        }
+        else if(player.food() < player.maxFood() * 0.2){
+            return "Hungry";
+        }
+        else if(player.food() > player.maxFood() * 0.9){
+            return "Stuffed";
+        }
+        else if(player.food() > player.maxFood() * 0.8){
+            return "Full";
+        }
+        else{
+            return "";
+        }
     }
 
 }
